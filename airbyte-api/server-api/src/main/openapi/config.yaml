@@ -21143,6 +21143,10 @@ components:
           $ref: "#/components/schemas/ScheduleTypeEnum"
         cronExpression:
           type: string
+        cronTimeZone:
+          type: string
+          description: IANA timezone for the cron schedule (e.g. "America/New_York"). Defaults to UTC.
+          default: "UTC"
       x-sdk-component: true
     ScheduleTypeEnum:
       type: string
@@ -21160,6 +21164,9 @@ components:
           $ref: "#/components/schemas/ScheduleTypeWithBasicEnum"
         cronExpression:
           type: string
+        cronTimeZone:
+          type: string
+          description: IANA timezone for the cron schedule (e.g. "America/New_York").
         basicTiming:
           type: string
       x-sdk-component: true
