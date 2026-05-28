@@ -1108,6 +1108,11 @@ components:
           $ref: "#/components/schemas/ScheduleTypeEnum"
         cronExpression:
           type: "string"
+        cronTimeZone:
+          type: "string"
+          description: "IANA timezone for the cron schedule (e.g. \"America/New_York\"\
+            ). Defaults to UTC."
+          default: "UTC"
       x-speakeasy-component: true
     ScheduleTypeEnum:
       type: "string"
@@ -1126,6 +1131,10 @@ components:
           $ref: "#/components/schemas/ScheduleTypeWithBasicEnum"
         cronExpression:
           type: "string"
+        cronTimeZone:
+          type: "string"
+          description: "IANA timezone for the cron schedule (e.g. \"America/New_York\"\
+            )."
         basicTiming:
           type: "string"
       x-speakeasy-component: true

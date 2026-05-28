@@ -23,7 +23,7 @@ import java.util.UUID
 
 class ConnectionUpdateMapperTest {
   @Test
-  fun testConnectionUpdateMapper() {
+  fun testConnectionUpdateMapperDefaultsTimezoneToUtc() {
     val connectionId = UUID.randomUUID()
     val catalogId = UUID.randomUUID()
 
@@ -63,6 +63,62 @@ class ConnectionUpdateMapperTest {
           io.airbyte.api.model.generated.ConnectionScheduleDataCron().apply {
             this.cronExpression = "0 0 0 0 0 0"
             this.cronTimeZone = "UTC"
+          }
+        val connectionScheduleData =
+          io.airbyte.api.model.generated.ConnectionScheduleData().apply {
+            this.cron = connectionScheduleDataCron
+          }
+        this.scheduleData = connectionScheduleData
+        this.connectionId = connectionId
+      }
+    Assertions.assertEquals(
+      expectedOssConnectionUpdateRequest,
+      ConnectionUpdateMapper.from(connectionId, connectionPatchRequest, catalogId, catalog),
+    )
+  }
+
+  @Test
+  fun testConnectionUpdateMapperPassesThroughTimezone() {
+    val connectionId = UUID.randomUUID()
+    val catalogId = UUID.randomUUID()
+
+    val catalog =
+      AirbyteCatalog().apply {
+        this.streams = emptyList()
+      }
+
+    val connectionPatchRequest =
+      ConnectionPatchRequest(
+        name = "test",
+        nonBreakingSchemaUpdatesBehavior = NonBreakingSchemaUpdatesBehaviorEnumNoDefault.DISABLE_CONNECTION,
+        namespaceDefinition = NamespaceDefinitionEnumNoDefault.DESTINATION,
+        namespaceFormat = "test",
+        prefix = "test",
+        dataResidency = US_DATAPLANE_GROUP,
+        schedule =
+          AirbyteApiConnectionSchedule(
+            scheduleType = ScheduleTypeEnum.CRON,
+            cronExpression = "0 0 0 0 0 0",
+            cronTimeZone = "Europe/Paris",
+          ),
+        status = ConnectionStatusEnum.INACTIVE,
+      )
+
+    val expectedOssConnectionUpdateRequest =
+      ConnectionUpdate().apply {
+        this.name = connectionPatchRequest.name
+        this.nonBreakingChangesPreference = NonBreakingChangesPreference.DISABLE
+        this.namespaceDefinition = NamespaceDefinitionType.DESTINATION
+        this.namespaceFormat = "test"
+        this.prefix = "test"
+        this.scheduleType = ConnectionScheduleType.CRON
+        this.sourceCatalogId = catalogId
+        this.syncCatalog = catalog
+        this.status = ConnectionStatus.INACTIVE
+        val connectionScheduleDataCron =
+          io.airbyte.api.model.generated.ConnectionScheduleDataCron().apply {
+            this.cronExpression = "0 0 0 0 0 0"
+            this.cronTimeZone = "Europe/Paris"
           }
         val connectionScheduleData =
           io.airbyte.api.model.generated.ConnectionScheduleData().apply {

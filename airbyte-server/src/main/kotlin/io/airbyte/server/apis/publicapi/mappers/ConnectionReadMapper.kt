@@ -74,6 +74,7 @@ object ConnectionReadMapper {
       ConnectionScheduleResponse(
         scheduleType = getScheduleType(connectionRead = connectionRead),
         cronExpression = connectionRead.scheduleData?.let { d -> d.cron?.let { c -> "${c.cronExpression} ${c.cronTimeZone}" } },
+        cronTimeZone = connectionRead.scheduleData?.cron?.cronTimeZone,
         basicTiming =
           connectionRead.scheduleType?.let { t ->
             if (t == ConnectionScheduleType.BASIC) {
